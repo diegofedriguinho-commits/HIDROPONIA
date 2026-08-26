@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Irrigação - Hidroponia</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+<h1>🚜 Hidroponia - Maringá</h1>
+<p>DI1-DI5 Boias | DI7 Térmicos Série | RO1-RO5 Sinaleiros | RO7 Falha Geral | RO8 Sirene</p>
+<div class="status-bar"><span id="conexao">● Conectando Firebase...</span><span id="hora"></span></div>
+</header>
+<div class="grid">
+  <div class="card"><h2>Bomba 1</h2><div class="lamp" id="ro1"></div><p id="di1">--</p><p id="st1">--</p><small>RO1</small></div>
+  <div class="card"><h2>Bomba 2</h2><div class="lamp" id="ro2"></div><p id="di2">--</p><p id="st2">--</p><small>RO2</small></div>
+  <div class="card"><h2>Bomba 3</h2><div class="lamp" id="ro3"></div><p id="di3">--</p><p id="st3">--</p><small>RO3</small></div>
+  <div class="card"><h2>Bomba 4</h2><div class="lamp" id="ro4"></div><p id="di4">--</p><p id="st4">--</p><small>RO4</small></div>
+  <div class="card"><h2>Bomba 5</h2><div class="lamp" id="ro5"></div><p id="di5">--</p><p id="st5">--</p><small>RO5</small></div>
+  <div class="card alarm"><h2>🚨 Central</h2><div style="display:flex;justify-content:space-around"><div><div class="lamp small" id="ro7"></div><p id="di7">--</p><small>RO7 Falha Térmica</small></div><div><div class="lamp small" id="ro8"></div><p id="sirene">--</p><small>RO8 Sirene</small></div></div></div>
+</div>
+<div class="controls">
+<button onclick="simularAgua()">SIMULAR SEM ÁGUA</button>
+<button class="red" onclick="simularTermico()">SIMULAR FALHA TÉRMICA (DI7)</button>
+<button class="green" onclick="resetar()">RESETAR TUDO OK</button>
+</div>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
