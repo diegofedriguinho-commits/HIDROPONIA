@@ -2,30 +2,80 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Irrigação - Hidroponia</title>
-<link rel="stylesheet" href="style.css">
+<title>Hidroponia - Maringá</title>
+<style>
+body{font-family:system-ui;background:#0f172a;color:#e2e8f0;padding:15px;text-align:center}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:700px;margin:20px auto}
+.card{background:#1e293b;padding:15px;border-radius:14px;border:1px solid #334155}
+.lamp{width:70px;height:70px;border-radius:50%;margin:10px auto;background:#334155}
+.on-green{background:#22c55e;box-shadow:0 0 20px #22c55e}
+.on-yellow{background:#eab308;box-shadow:0 0 20px #eab308;animation:blink 1s infinite}
+.on-red{background:#ef4444;box-shadow:0 0 20px #ef4444;animation:blink .6s infinite}
+@keyframes blink{50%{opacity:.3}}
+.alarm{grid-column:span 2;background:#450a0a}
+button{padding:16px;border:none;border-radius:10px;background:#3b82f6;color:#fff;font-weight:bold;width:100%;margin-top:10px}
+button.red{background:#dc2626} button.green{background:#16a34a}
+</style>
 </head>
 <body>
-<header>
 <h1>🚜 Hidroponia - Maringá</h1>
-<p>DI1-DI5 Boias | DI7 Térmicos Série | RO1-RO5 Sinaleiros | RO7 Falha Geral | RO8 Sirene</p>
-<div class="status-bar"><span id="conexao">● Conectando Firebase...</span><span id="hora"></span></div>
-</header>
+<p>DI1-DI5 Boias | DI7 Térmicos | RO1-RO5 Amarelos | RO7 Vermelho | RO8 Sirene</p>
 <div class="grid">
-  <div class="card"><h2>Bomba 1</h2><div class="lamp" id="ro1"></div><p id="di1">--</p><p id="st1">--</p><small>RO1</small></div>
-  <div class="card"><h2>Bomba 2</h2><div class="lamp" id="ro2"></div><p id="di2">--</p><p id="st2">--</p><small>RO2</small></div>
-  <div class="card"><h2>Bomba 3</h2><div class="lamp" id="ro3"></div><p id="di3">--</p><p id="st3">--</p><small>RO3</small></div>
-  <div class="card"><h2>Bomba 4</h2><div class="lamp" id="ro4"></div><p id="di4">--</p><p id="st4">--</p><small>RO4</small></div>
-  <div class="card"><h2>Bomba 5</h2><div class="lamp" id="ro5"></div><p id="di5">--</p><p id="st5">--</p><small>RO5</small></div>
-  <div class="card alarm"><h2>🚨 Central</h2><div style="display:flex;justify-content:space-around"><div><div class="lamp small" id="ro7"></div><p id="di7">--</p><small>RO7 Falha Térmica</small></div><div><div class="lamp small" id="ro8"></div><p id="sirene">--</p><small>RO8 Sirene</small></div></div></div>
+  <div class="card"><h2>Bomba 1</h2><div class="lamp" id="ro1"></div><p id="di1">--</p></div>
+  <div class="card"><h2>Bomba 2</h2><div class="lamp" id="ro2"></div><p id="di2">--</p></div>
+  <div class="card"><h2>Bomba 3</h2><div class="lamp" id="ro3"></div><p id="di3">--</p></div>
+  <div class="card"><h2>Bomba 4</h2><div class="lamp" id="ro4"></div><p id="di4">--</p></div>
+  <div class="card"><h2>Bomba 5</h2><div class="lamp" id="ro5"></div><p id="di5">--</p></div>
+  <div class="card alarm"><h2>🚨 Central</h2><div class="lamp" id="ro7"></div><p id="di7">--</p><div class="lamp" id="ro8"></div><p id="sirene">--</p></div>
 </div>
-<div class="controls">
 <button onclick="simularAgua()">SIMULAR SEM ÁGUA</button>
-<button class="red" onclick="simularTermico()">SIMULAR FALHA TÉRMICA (DI7)</button>
-<button class="green" onclick="resetar()">RESETAR TUDO OK</button>
-</div>
+<button class="red" onclick="simularTermico()">SIMULAR FALHA TÉRMICA DI7</button>
+<button class="green" onclick="resetar()">RESETAR OK</button>
+
+<script>
+// FUNÇÕES DEFINIDAS PRIMEIRO PRA NÃO DAR SEU ERRO
+let estado = { di1:true, di2:true, di3:true, di4:true, di5:true, di7:true };
+function render(){
+  let sirene=false;
+  for(let i=1;i<=5;i++){
+    let tem=estado['di'+i];
+    let el=document.getElementById('ro'+i);
+    if(el) el.className='lamp '+(tem?'on-green':'on-yellow');
+    let d=document.getElementById('di'+i);
+    if(d) d.innerText='DI'+i+' Boia: '+(tem?'COM ÁGUA':'SEM ÁGUA! RO'+i+' LIGADO');
+    if(!tem) sirene=true;
+  }
+  document.getElementById('ro7').className='lamp '+(estado.di7?'':'on-red');
+  document.getElementById('di7').innerText=estado.di7?'DI7 Térmicos OK':'DI7 FALHA! RO7 VERMELHO LIGADO';
+  if(!estado.di7) sirene=true;
+  document.getElementById('ro8').className='lamp '+(sirene?'on-red':'');
+  document.getElementById('sirene').innerText=sirene?'RO8 Sirene TOCANDO 🔊':'RO8 Desligada';
+}
+function simularAgua(){estado.di2=!estado.di2; if(!estado.di2) estado.di1=false; else {estado.di1=true; estado.di2=true;} render(); salvar();}
+function simularTermico(){estado.di7=!estado.di7; render(); salvar();}
+function resetar(){estado={di1:true,di2:true,di3:true,di4:true,di5:true,di7:true}; render(); salvar();}
+function salvar(){ if(window.db) window.db.ref('bombas').set(estado); }
+render();
+</script>
+
+<!-- FIREBASE DEPOIS -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-<script src="app.js"></script>
+<script>
+try{
+const firebaseConfig = {
+  apiKey: "AIzaSyDDP0XBrhw_W-9KOhIfJIcmaRxxs20snHA",
+  authDomain: "hidroponia-66218.firebaseapp.com",
+  databaseURL: "https://hidroponia-66218-default-rtdb.firebaseio.com",
+  projectId: "hidroponia-66218",
+  storageBucket: "hidroponia-66218.firebasestorage.app",
+  messagingSenderId: "96436342619",
+  appId: "1:96436342619:web:800d919a4a530dff10947e"
+};
+firebase.initializeApp(firebaseConfig);
+window.db = firebase.database();
+window.db.ref('bombas').on('value', s=>{ if(s.val()){ estado=s.val(); render(); } });
+}catch(e){ console.log("Firebase offline, modo demo", e); }
+</script>
 </body>
 </html>
